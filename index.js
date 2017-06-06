@@ -115,22 +115,22 @@ wrap(net.Socket.prototype, 'connect', function (original) {
   };
 });
 
-var http = require('http');
-
-// NOTE: A rewrite occurred in 0.11 that changed the addRequest signature
-// from (req, host, port, localAddress) to (req, options)
-// Here, I use the longer signature to maintain 0.10 support, even though
-// the rest of the arguments aren't actually used
-wrap(http.Agent.prototype, 'addRequest', function (original) {
-  return function (req) {
-    var onSocket = req.onSocket;
-    req.onSocket = wrapCallback(function (socket) {
-      patchOnRead(socket);
-      return onSocket.apply(this, arguments);
-    });
-    return original.apply(this, arguments);
-  };
-});
+// var http = require('http');
+//
+// // NOTE: A rewrite occurred in 0.11 that changed the addRequest signature
+// // from (req, host, port, localAddress) to (req, options)
+// // Here, I use the longer signature to maintain 0.10 support, even though
+// // the rest of the arguments aren't actually used
+// wrap(http.Agent.prototype, 'addRequest', function (original) {
+//   return function (req) {
+//     var onSocket = req.onSocket;
+//     req.onSocket = wrapCallback(function (socket) {
+//       patchOnRead(socket);
+//       return onSocket.apply(this, arguments);
+//     });
+//     return original.apply(this, arguments);
+//   };
+// });
 
 var childProcess = require('child_process');
 
